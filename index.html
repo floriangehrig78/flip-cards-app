@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flip-Karten App</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Meine Lernkarten</h1>
+            <div class="filter-buttons" id="filterButtons">
+                <!-- Wird dynamisch gefüllt -->
+            </div>
+        </header>
+
+        <main>
+            <div class="cards-grid" id="cardsGrid">
+                <!-- Karten werden hier dynamisch eingefügt -->
+            </div>
+        </main>
+
+        <footer>
+            <button class="add-card-btn" id="addCardBtn">+ Neue Karte</button>
+        </footer>
+    </div>
+
+    <!-- Modal für neue Karte -->
+    <div class="modal" id="cardModal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Neue Karte erstellen</h2>
+            <form id="cardForm">
+                <input type="text" id="frontText" placeholder="Vorderseite" required>
+                <input type="text" id="backText" placeholder="Rückseite" required>
+                <input type="text" id="category" placeholder="Kategorie" required>
+                <button type="submit">Hinzufügen</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/cards-data.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
