@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flip-Karten App</title>
+    <title>Hilfskarten App</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>Meine Karten</h1>
+            <h1>Meine Hilfskarten</h1>
             <div class="filter-buttons" id="filterButtons">
                 <!-- Wird dynamisch gefüllt -->
             </div>
@@ -22,7 +22,7 @@
         </main>
 
         <footer>
-            <button class="add-card-btn" id="addCardBtn">+ Neue Karte</button>
+            <button class="add-card-btn" id="addCardBtn">+ Neue Hilfskarte</button>
         </footer>
     </div>
 
@@ -30,12 +30,34 @@
     <div class="modal" id="cardModal">
         <div class="modal-content">
             <span class="close">&times;</span>
-            <h2>Neue Karte erstellen</h2>
+            <h2>Neue Hilfskarte erstellen</h2>
             <form id="cardForm">
-                <input type="text" id="frontText" placeholder="Vorderseite" required>
-                <input type="text" id="backText" placeholder="Rückseite" required>
+                <div class="form-section">
+                    <h3>Vorderseite</h3>
+                    <input type="text" id="title" placeholder="Titel" required>
+                    <input type="text" id="imageUrl" placeholder="Bild-URL oder leer lassen für Platzhalter">
+                    <input type="file" id="imageFile" accept="image/*">
+                    <small>Bild-URL eingeben ODER Datei hochladen</small>
+                </div>
+
+                <div class="form-section">
+                    <h3>Rückseite</h3>
+                    <div class="back-section">
+                        <input type="text" id="section1Title" placeholder="Abschnitt 1 - Titel" required>
+                        <textarea id="section1Text" placeholder="Abschnitt 1 - Text" rows="3" required></textarea>
+                    </div>
+                    <div class="back-section">
+                        <input type="text" id="section2Title" placeholder="Abschnitt 2 - Titel" required>
+                        <textarea id="section2Text" placeholder="Abschnitt 2 - Text" rows="3" required></textarea>
+                    </div>
+                    <div class="back-section">
+                        <input type="text" id="section3Title" placeholder="Abschnitt 3 - Titel" required>
+                        <textarea id="section3Text" placeholder="Abschnitt 3 - Text" rows="3" required></textarea>
+                    </div>
+                </div>
+
                 <input type="text" id="category" placeholder="Kategorie" required>
-                <button type="submit">Hinzufügen</button>
+                <button type="submit">Hilfskarte hinzufügen</button>
             </form>
         </div>
     </div>
