@@ -1,5 +1,5 @@
-// Hauptanwendung
-class FlipCardsApp {
+// Hilfskarten Anwendung
+class HelpCardsApp {
     constructor() {
         this.cards = CardsStorage.load();
         this.currentFilter = 'Alle';
@@ -32,7 +32,6 @@ class FlipCardsApp {
             </button>
         `).join('');
         
-        // Event Listeners für Filter
         container.querySelectorAll('.filter-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 this.currentFilter = e.target.dataset.category;
@@ -56,27 +55,48 @@ class FlipCardsApp {
         const filteredCards = this.getFilteredCards();
         
         if (filteredCards.length === 0) {
-            container.innerHTML = '<p style="color: white; text-align: center; grid-column: 1/-1;">Keine Karten in dieser Kategorie</p>';
+            container.innerHTML = '<div class="empty-state">Keine Hilfskarten in dieser Kategorie</div>';
             return;
         }
         
-        container.innerHTML = filteredCards.map(card => `
+        container.innerHTML = filteredCards.map(card => this.createCardHTML(card)).join('');
+        this.setupCardListeners();
+    }
+    
+    // Einzelne Karte HTML erstellen
+    createCardHTML(card) {
+        const sectionsHTML = card.sections.map(section => `
+            <div class="info-section">
+                <h3>${this.escapeHtml(section.title)}</h3>
+                <p>${this.escapeHtml(section.text)}</p>
+            </div>
+        `).join('');
+        
+        return `
             <div class="card-container" data-id="${card.id}">
                 <div class="card">
                     <div class="card-face card-front">
                         <button class="delete-btn" data-id="${card.id}">×</button>
-                        <span class="card-category">${card.category}</span>
-                        <div>${card.front}</div>
+                        <span class="card-category">${this.escapeHtml(card.category)}</span>
+                        <img src="${card.imageUrl}" 
+                             alt="${this.escapeHtml(card.title)}" 
+                             class="card-image"
+                             onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22300%22%3E%3Crect fill=%22%23f0f0f0%22 width=%22400%22 height=%22300%22/%3E%3Ctext fill=%22%23999%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 font-family=%22Arial%22 font-size=%2224%22%3EKein Bild%3C/text%3E%3C/svg%3E'">
+                        <div class="card-title">${this.escapeHtml(card.title)}</div>
                     </div>
                     <div class="card-face card-back">
-                        <div>${card.back}</div>
+                        ${sectionsHTML}
                     </div>
                 </div>
             </div>
-        `).join('');
-        
-        // Event Listeners für Karten
-        this.setupCardListeners();
+        `;
+    }
+    
+    // XSS Schutz
+    escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
     }
     
     // Event Listeners für Karten
@@ -84,7 +104,6 @@ class FlipCardsApp {
         // Flip-Funktionalität
         document.querySelectorAll('.card-container').forEach(container => {
             container.addEventListener('click', (e) => {
-                // Nicht flippen, wenn Delete-Button geklickt wurde
                 if (e.target.classList.contains('delete-btn')) {
                     return;
                 }
@@ -105,26 +124,27 @@ class FlipCardsApp {
     
     // Karte löschen
     deleteCard(id) {
-        if (confirm('Möchtest du diese Karte wirklich löschen?')) {
+        if (confirm('Möchtest du diese Hilfskarte wirklich löschen?')) {
             this.cards = this.cards.filter(card => card.id !== id);
             CardsStorage.save(this.cards);
-            this.renderFilterButtons(); // Kategorien könnten sich geändert haben
+            this.renderFilterButtons();
             this.renderCards();
         }
     }
     
     // Neue Karte hinzufügen
-    addCard(front, back, category) {
+    addCard(cardData) {
         const newCard = {
             id: this.nextId++,
-            front: front,
-            back: back,
-            category: category
+            title: cardData.title,
+            imageUrl: cardData.imageUrl,
+            category: cardData.category,
+            sections: cardData.sections
         };
         
         this.cards.push(newCard);
         CardsStorage.save(this.cards);
-        this.renderFilterButtons(); // Neue Kategorie könnte hinzugefügt worden sein
+        this.renderFilterButtons();
         this.renderCards();
     }
     
@@ -134,6 +154,7 @@ class FlipCardsApp {
         const addBtn = document.getElementById('addCardBtn');
         const closeBtn = document.querySelector('.close');
         const form = document.getElementById('cardForm');
+        const imageFile = document.getElementById('imageFile');
         
         // Modal öffnen
         addBtn.addEventListener('click', () => {
@@ -146,7 +167,6 @@ class FlipCardsApp {
             form.reset();
         });
         
-        // Modal schließen beim Klick außerhalb
         window.addEventListener('click', (e) => {
             if (e.target === modal) {
                 modal.style.display = 'none';
@@ -154,24 +174,57 @@ class FlipCardsApp {
             }
         });
         
+        // Bild-Upload Handler
+        imageFile.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    document.getElementById('imageUrl').value = event.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+        
         // Formular absenden
         form.addEventListener('submit', (e) => {
             e.preventDefault();
             
-            const front = document.getElementById('frontText').value.trim();
-            const back = document.getElementById('backText').value.trim();
-            const category = document.getElementById('category').value.trim();
+            const cardData = {
+                title: document.getElementById('title').value.trim(),
+                imageUrl: document.getElementById('imageUrl').value.trim() || 
+                         'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22300%22%3E%3Crect fill=%22%23667eea%22 width=%22400%22 height=%22300%22/%3E%3Ctext fill=%22white%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 font-family=%22Arial%22 font-size=%2224%22%3EHilfskarte%3C/text%3E%3C/svg%3E',
+                category: document.getElementById('category').value.trim(),
+                sections: [
+                    {
+                        title: document.getElementById('section1Title').value.trim(),
+                        text: document.getElementById('section1Text').value.trim()
+                    },
+                    {
+                        title: document.getElementById('section2Title').value.trim(),
+                        text: document.getElementById('section2Text').value.trim()
+                    },
+                    {
+                        title: document.getElementById('section3Title').value.trim(),
+                        text: document.getElementById('section3Text').value.trim()
+                    }
+                ]
+            };
             
-            if (front && back && category) {
-                this.addCard(front, back, category);
+            // Validierung
+            if (cardData.title && cardData.category && 
+                cardData.sections.every(s => s.title && s.text)) {
+                this.addCard(cardData);
                 modal.style.display = 'none';
                 form.reset();
+            } else {
+                alert('Bitte fülle alle Felder aus!');
             }
         });
     }
 }
 
-// App starten, wenn DOM geladen ist
+// App starten
 document.addEventListener('DOMContentLoaded', () => {
-    new FlipCardsApp();
+    new HelpCardsApp();
 });
