@@ -511,3 +511,36 @@ header p {
     color: white;
     transform: scale(1.1);
 }
+
+#categorySelect,
+#categoryInput,
+#newCategoryInput {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s;
+    font-family: inherit;
+}
+
+#categorySelect:focus,
+#categoryInput:focus,
+#newCategoryInput:focus {
+    outline: none;
+    border-color: #000;
+}
+
+#categoryContainer label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #333;
+}
+
+#newCategoryContainer {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    border: 2px dashed #ddd;
+}
