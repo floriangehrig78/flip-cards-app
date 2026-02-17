@@ -74,6 +74,8 @@ class HelpCardsApp {
     createCardHTML(card) {
         const sectionsHTML = card.sections.map(section => `
             <div class="info-section">
+                <div class="section-title">${this.escapeHtml(section.title)}</div>
+
                 <h3>${this.escapeHtml(section.title)}</h3>
                 <p>${this.escapeHtml(section.text)}</p>
             </div>

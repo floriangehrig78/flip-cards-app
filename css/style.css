@@ -544,3 +544,12 @@ header p {
     border-radius: 8px;
     border: 2px dashed #ddd;
 }
+.section-title {
+    color: #000;
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    list-style: none;
+}
